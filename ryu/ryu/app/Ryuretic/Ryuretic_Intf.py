@@ -19,8 +19,8 @@
 2) Save the following files to /home/ubuntu/ryu/ryu/app/
     a) Ryuretic_Intf.py
     b) Ryuretic.py
-    c) Pkt_Parse.py
-    d) switch_mod.py
+    c) Pkt_Parse13.py
+    d) switch_mod13.py
 2) In your controller terminal type: cd ryu
 3) Enter PYTHONPATH=. ./bin/ryu-manager ryu/app/Ryuretic_Intf.py
 """
@@ -33,43 +33,31 @@ class Ryuretic_coupler(coupler):
     def __init__(self, *args, **kwargs):
         super(Ryuretic_coupler, self).__init__(*args, **kwargs)
 
-        ##############      Add User Variables     ###############
-        #[2] Add new variables here.
-        self.stat_Fw_tbl = {}
-        self.cntrl ={'mac': 'ca:ca:ca:ab:ab:ab','ip':'10.0.0.40',
-                     'port':None}
-        self.badhost = {'mac':'00:00:00:00:00:02', 'ip':'10.0.0.2'}
-        self.net_tbl ={}
-        self.net_MacTbl = {}
-        self.net_PortTbl = {}
-        self.net_tbl['00:00:00:00:00:02'] = {'stat':'flagged'}
-        print self.net_tbl.keys()
-        self.policyTbl = {}
-        self.actionTbl = {}
+        ############## 2     Add User Variables     2 ###################
+        #[2] Add new global variables here.                             #
+        #    Ex. ICMP_ECHO_REQUEST = 8, self.netView = {}               #
+        #################################################################
         self.netView = {}
-        self.keyID = 101
-        self.t_agent = {}
-        ICMP_ECHO_REPLY = 0
-        ICMP_ECHO_REQUEST = 8
     
-    ##############         Proactive Rule Sets    #######################
+    ################ 3       Proactive Rule Sets    3 ###################
     #[3] Insert proactive rules defined below. Follow format below      #
     #    Options include drop or redirect, fwd is the default.          #
+    #####################################################################
     def get_proactive_rules(self, dp, parser, ofproto):
         # return None, None
         fields, ops = self.honeypot(dp, parser, ofproto)
         return fields, ops
 
-    ################       Reactive Rule Sets     #######################
+    ################# 4     Reactive Rule Sets    4 #####################
     #[4] use below handles to direct packets to reactive user modules   #
     #    defined in location #[5]. If no rule is added, then            #
     #    the default self.default_Fields_Ops(pkt) must be used          #
     #####################################################################
-    #Determine highest priority fields and ops pair, if needed
-    #xfields = [fields0, fields1, fields2]
-    #xops = [ops0, ops1, ops2]
-    #fields,ops = self._build_FldOps(xfields,xops)
-    ##############################################################    
+    # Determine highest priority fields and ops pair, if needed         #
+    # xfields = [fields0, fields1, fields2]                             #
+    # xops = [ops0, ops1, ops2]                                         #
+    # fields,ops = self._build_FldOps(xfields,xops)                     #
+    #####################################################################    
     def handle_eth(self,pkt):
         print "handle eth"
         fields, ops = self.default_Field_Ops(pkt)
@@ -91,17 +79,16 @@ class Ryuretic_coupler(coupler):
         fields, ops = self.default_Field_Ops(pkt)
         self.install_field_ops(pkt, fields, ops)       
 
-
     def handle_udp(self,pkt):
         fields, ops = self.default_Field_Ops(pkt)
         self.install_field_ops(pkt, fields, ops)
-        
 
+    # All packets not defined above are handled here.    
     def handle_unk(self,pkt):
         fields, ops = self.default_Field_Ops(pkt)
         self.install_field_ops(pkt, fields, ops)
 
-
+    #####################################################################
     # The following are from the old NFG file.
     def default_Field_Ops(self,pkt):
         def _loadFields(pkt):
@@ -129,13 +116,27 @@ class Ryuretic_coupler(coupler):
         fields = _loadFields(pkt)
         ops = _loadOps()
         return fields, ops
+    #####################################################################
 
-
-    #############  Ryuretic Network Application Modules    ##################   
-    #[5] Add user created methods below. Examples are provided to assist    #
-    # the user with basic python, dictionary, list, and function calls      #
-
+    ############ 5  Ryuretic Network Application Modules  5 ##############   
+    #[5] Add user created methods below. Examples are provided to assist #
+    # the user with basic python, dictionary, list, and function calls   #
+    ######################################################################
     # Confirm mac has been seen before and no issues are recorded
+    def TTL_Check(self, pkt):
+        print "TTL Check called"
+        fields, ops = self.default_Field_Ops(pkt)
+       # print "\n*******pkt_in_handler - TTL_Check********"
+        if pkt['ttl'] == 63 and pkt['mac']:
+            print "XxXxXx  NAT Detected  xXxXxX"
+            #drop all packets from port with TTL decrement
+            fields['keys'] = ['inport']
+            fields['inport'] = pkt['inport']
+            ops['priority'] = 100
+            ops['op']='drop'
+        return fields, ops
+
+
     def check_net_tbl(self,mac,port=0):
         if mac in self.net_MacTbl.keys():
             print mac, " found in table."         
@@ -212,10 +213,7 @@ class Ryuretic_coupler(coupler):
                 #Acknowledge receipt
                 pass
             else:
-                print "No match"
-                
-                
-                
+                print "No match"   
             fields['dstip'] = pkt['srcip']
             fields['srcip'] = self.cntrl['ip']
             fields['dstmac'] = pkt['srcmac']

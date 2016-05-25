@@ -19,8 +19,8 @@
 2) Save the following files to /home/ubuntu/ryu/ryu/app/
     a) Ryuretic_Intf.py
     b) Ryuretic.py
-    c) Pkt_Parse.py
-    d) switch_mod.py
+    c) Pkt_Parse13.py
+    d) switch_mod13.py
 2) In your controller terminal type: cd ryu
 3) Enter PYTHONPATH=. ./bin/ryu-manager ryu/app/Ryuretic_Intf.py
 """
@@ -259,7 +259,7 @@ class coupler(app_manager.RyuApp):
         fields['dp'].send_msg(out)
 
     #############################################################
-    #Use fields to build match
+    #Use fields to build match. These are passed to the switch.
     def pkt_match(self, fields):
         def build_match(fields):
             match_vals = {}     
@@ -440,87 +440,3 @@ class coupler(app_manager.RyuApp):
         switch.port_status_handler(ev)
 
 
-## Future work needed for ryuretic. Removing flows
-##    def delete_flow(self, datapath):
-##        ofproto = datapath.ofproto
-##        parser = datapath.ofproto_parser
-##        for dst in self.mac_to_port[datapath.id].keys():
-##            match = parser.OFPMatch(eth_dst=dst)
-##            mod = parser.OFPFlowMod(
-##                datapath, command=ofproto.OFPFC_DELETE,
-##                out_port=ofproto.OFPP_ANY, out_group=ofproto.OFPG_ANY,
-##                priority=1, match=match)
-##        datapath.send_msg(mod)
-"""Options for mod command:
-OFPFC_ADD, OFPFC_MODIFY, OFPFC_DELETE, OFPFC_DELETE_STRICT
-"""
-
-"""
-http://ryu-zhdoc.readthedocs.org/en/latest/ofproto_v1_3_ref.html
-in_port	Integer 32bit	Switch input port
-in_phy_port	Integer 32bit	Switch physical input port
-metadata	Integer 64bit	Metadata passed between tables
-eth_dst	MAC address	Ethernet destination address
-eth_src	MAC address	Ethernet source address
-eth_type	Integer 16bit	Ethernet frame type
-vlan_vid	Integer 16bit	VLAN id
-vlan_pcp	Integer 8bit	VLAN priority
-ip_dscp	Integer 8bit	IP DSCP (6 bits in ToS field)
-ip_ecn	Integer 8bit	IP ECN (2 bits in ToS field)
-ip_proto	Integer 8bit	IP protocol
-ipv4_src	IPv4 address	IPv4 source address
-ipv4_dst	IPv4 address	IPv4 destination address
-tcp_src	Integer 16bit	TCP source port
-tcp_dst	Integer 16bit	TCP destination port
-udp_src	Integer 16bit	UDP source port
-udp_dst	Integer 16bit	UDP destination port
-sctp_src	Integer 16bit	SCTP source port
-sctp_dst	Integer 16bit	SCTP destination port
-icmpv4_type	Integer 8bit	ICMP type
-icmpv4_code	Integer 8bit	ICMP code
-arp_op	Integer 16bit	ARP opcode
-arp_spa	IPv4 address	ARP source IPv4 address
-arp_tpa	IPv4 address	ARP target IPv4 address
-arp_sha	MAC address	ARP source hardware address
-arp_tha	MAC address	ARP target hardware address
-ipv6_src	IPv6 address	IPv6 source address
-ipv6_dst	IPv6 address	IPv6 destination address
-ipv6_flabel	Integer 32bit	IPv6 Flow Label
-icmpv6_type	Integer 8bit	ICMPv6 type
-icmpv6_code	Integer 8bit	ICMPv6 code
-ipv6_nd_target	IPv6 address	Target address for ND
-ipv6_nd_sll	MAC address	Source link-layer for ND
-ipv6_nd_tll	MAC address	Target link-layer for ND
-mpls_label	Integer 32bit	MPLS label
-mpls_tc	Integer 8bit	MPLS TC
-mpls_bos	Integer 8bit	MPLS BoS bit
-pbb_isid	Integer 24bit	PBB I-SID
-tunnel_id	Integer 64bit	Logical Port Metadata
-ipv6_exthdr	Integer 16bit	IPv6 Extension Header pseudo-field
-pbb_uca	Integer 8bit	PBB UCA header field (EXT-256 Old version of ONF Extension)
-tcp_flags	Integer 16bit	TCP flags (EXT-109 ONF Extension)
-actset_output	Integer 32bit	Output port from action set metadata (EXT-233 ONF Extension)
-"""
-
-"""Still need to create a method for detecting when to craft a packet.
-Somehow #packets must continue to traverse the network while this occors.
-Introduce a new variable perhaps, <flag> when set read to see if packet
-should be crafted"""
-
-
-############Obsolete code pending delete
-##    def _handle_icmp(self, datapath, port, pkt_ethernet, pkt_ipv4, pkt_icmp):
-##        if pkt_icmp.type != icmp.ICMP_ECHO_REQUEST:
-##            return
-##        pkt = packet.Packet()
-##        pkt.add_protocol(ethernet.ethernet(ethertype=pkt_ethernet.ethertype,
-##                        dst=pkt_ethernet.src,
-##                        src=self.hw_addr))
-##        pkt.add_protocol(ipv4.ipv4(dst=pkt_ipv4.src,
-##                        src=self.ip_addr,
-##                        proto=pkt_ipv4.proto))
-##        pkt.add_protocol(icmp.icmp(type_=icmp.ICMP_ECHO_REPLY,
-##                        code=icmp.ICMP_ECHO_REPLY_CODE,
-##                        csum=0,
-##                        data=pkt_icmp.data))
-##        self._send_packet(datapath, port, pkt)
