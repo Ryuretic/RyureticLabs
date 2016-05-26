@@ -203,15 +203,16 @@ class coupler(app_manager.RyuApp):
             
         inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS,
                                              actions)]
-        print "line 210 here are match", match 
-        print "line 211 here are instructions", inst
+        #print "line 210 here are match", match 
+        #print "line 211 here are instructions", inst
         #fix switch mod to address 'idle_t'
+        print match
         mod = parser.OFPFlowMod(datapath=dp,
                             priority=ops['priority'],
                             idle_timeout=ops['idle_t'],
-                            hard_timeout=60,
                             match=match, instructions=inst)
-        print "line 218. Mod send to switch: \n", mod
+        #print "line 218. Mod send to switch: \n", mod
+        print "MOD: ", mod
         dp.send_msg(mod)
 		
     ############################################################    
@@ -228,8 +229,8 @@ class coupler(app_manager.RyuApp):
     def install_field_ops(self, pkt, fields, ops):
         #Build match from pkt and fields
         match = self.pkt_match(fields)
-        print "Match Fields are:   ", match
-		#Build actions from pkt and ops
+        #print "Match Fields are:   ", match
+	#Build actions from pkt and ops
         out_port, actions = self.pkt_action(pkt,ops,fields)
         priority = ops['priority']
         msg = fields['msg']                          
@@ -237,10 +238,10 @@ class coupler(app_manager.RyuApp):
         
         # install temporary flow to avoid future packet_in. 
         # idle_t and hard_t must be set to something. 
-##        if ops['idle_t']: # or ops['hard_t']:
-##            if out_port != ofproto.OFPP_FLOOD:
+        if ops['idle_t']: # or ops['hard_t']:
+            if out_port != ofproto.OFPP_FLOOD:
 ##                print "Line 244: ", actions
-##                self.add_timeFlow(fields['dp'], ops, match, actions)
+                self.add_timeFlow(fields['dp'], ops, match, actions)
 
         # For ping and wget, data = None
         data = None
@@ -297,12 +298,12 @@ class coupler(app_manager.RyuApp):
         return match
 
     ###############################################################
-    #Determine action to be taken on packet ops={'op':None, 'newport':None}
-    #User can forward , drop, redirect, mirror, or craft packets. 
+    # Determine action to be taken on packet ops={'op':None, 'newport':None}
+    # User can forward , drop, redirect, mirror, or craft packets. 
     def pkt_action(self,pkt,ops,fields):
-        print"********************\npacket action\n*****************"
+        #print"********************\npacket action\n*****************"
         actions = []
-        print "line 305. Ops: ", ops
+        #print "line 305. Ops: ", ops
         parser = fields['dp'].ofproto_parser
         if ops['op'] == 'fwd':
             out_port = self.switch.handle_pkt(pkt)
@@ -312,8 +313,8 @@ class coupler(app_manager.RyuApp):
             actions.append(parser.OFPActionOutput(out_port))
         elif ops['op'] == 'redir':
             out_port = ops['newport']
-            print "line 312: dstmac: ", fields['dstmac']
-            print "line 313: dstip: ", fields['dstip']
+            #print "line 312: dstmac: ", fields['dstmac']
+            #print "line 313: dstip: ", fields['dstip']
             #print pkt['dstip']
             #This may no longer be necessary
             if pkt['ip'] is not None:
@@ -326,7 +327,7 @@ class coupler(app_manager.RyuApp):
             mir_port = ops['newport']
             actions.append(parser.OFPActionOutput(mir_port))
         elif ops['op'] == 'craft':
-            print "***\nCrafting Packet\n***"
+            #print "***\nCrafting Packet\n***"
             #create and send new pkt due to craft trigger
             self._build_pkt(fields, ops) 
             #Now drop the arrived packet
@@ -396,22 +397,21 @@ class coupler(app_manager.RyuApp):
                                 csum = 0,
                                 total_length = 0,
                                 src_port=fields['srcport']))
-            #	bits=fields['bits'],option=fields['opt'],
-##                                            
-##                                
+                                
         # Add if TCP                         	 
         if 'tcp' in fields['ptype']:
             pkt_out = addIPv4(pkt_out,fields)
             pkt_out.add_protocol(tcp.tcp(dst_port=fields['dstport'],
 				bits=fields['bits'],option=fields['opt'],
                                 src_port=fields['srcport']))
+            
         #Add covert channel information                    
         if fields['com'] != None:
             pkt_out.add_protocol(fields['com'])
             
         #Send crafted packet
-        print "Packet out: \n"
-        print pkt_out
+        #print "Packet out: \n"
+        #print pkt_out
         self._send_packet(fields['dp'], ops['newport'], pkt_out)
 	
     #Receive crafted packet and send it to the switch
@@ -430,7 +430,6 @@ class coupler(app_manager.RyuApp):
                                   in_port=ofproto.OFPP_CONTROLLER,
                                   actions=actions,
                                   data=data)
-        #print "\nout: ", out, "\n"
         datapath.send_msg(out)
 		
     #Clean up and disconnect ports. Controller going down  
