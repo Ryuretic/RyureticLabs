@@ -1,33 +1,38 @@
 #####################################################################
 # Ryuretic: A Modular Framework for RYU                             #
-# !/ryu/ryu/app/SecRevCntrl/Ryuretic_Intf.py                        #
+# !/ryu/ryu/app/Ryuretic/Ryuretic_Intf.py                           #
 # Authors:                                                          #
 #   Jacob Cox (jcox70@gatech.edu)                                   #
 #   Sean Donovan (sdonovan@gatech.edu)                              #
 # Ryuretic_Intf.py                                                  #
 # date 28 April 2016                                                #
 #####################################################################
-# Copyright (C) 1883 Thomas Edison - All Rights Reserved            #
+# Copyright (C) 2016 Jacob Cox - All Rights Reserved                #
 # You may use, distribute and modify this code under the            #
 # terms of the Ryuretic license, provided this work is cited        #
 # in the work for which it is used.                                 #
 # For latest updates, please visit:                                 #
-#                   https://github.gatech.edu/jcox70/SecRevFrame    #
+#                   https://github.gatech.edu/jcox70/RyureticLabs   #
 #####################################################################
 """How To Run This Program
 1) Ensure you have Ryu installed.
-2) Save the following files to /home/ubuntu/ryu/ryu/app/
+2) Save the following files to /home/ubuntu/ryu/ryu/app/Ryuretic directory
     a) Ryuretic_Intf.py
     b) Ryuretic.py
     c) Pkt_Parse13.py
     d) switch_mod13.py
-2) In your controller terminal type: cd ryu
-3) Enter PYTHONPATH=. ./bin/ryu-manager ryu/app/Ryuretic_Intf.py
+3) In your controller terminal type: cd ryu
+4) Enter PYTHONPATH=. ./bin/ryu-manager ryu/app/Ryuretic/Ryuretic_Intf.py
 """
-#####################################################################
+#########################################################################
 from Ryuretic import coupler
-#[1] Import needed libraries here
+#################1     Import Needed Libraries    1######################
+#[1] Import needed libraries here                                       #    
+#########################################################################
 import string, random
+
+
+
 
 class Ryuretic_coupler(coupler):
     def __init__(self, *args, **kwargs):
@@ -37,16 +42,18 @@ class Ryuretic_coupler(coupler):
         #[2] Add new global variables here.                             #
         #    Ex. ICMP_ECHO_REQUEST = 8, self.netView = {}               #
         #################################################################
-        self.netView = {}
+        self.netView = {}    #Added for Tutorial 2
+
+        
     
     ################ 3       Proactive Rule Sets    3 ###################
     #[3] Insert proactive rules defined below. Follow format below      #
     #    Options include drop or redirect, fwd is the default.          #
     #####################################################################
     def get_proactive_rules(self, dp, parser, ofproto):
-        # return None, None
-        fields, ops = self.honeypot(dp, parser, ofproto)
-        return fields, ops
+        return None, None
+        #fields, ops = self.honeypot(dp, parser, ofproto)
+        #return fields, ops
 
     ################# 4     Reactive Rule Sets    4 #####################
     #[4] use below handles to direct packets to reactive user modules   #
@@ -66,28 +73,30 @@ class Ryuretic_coupler(coupler):
     def handle_arp(self,pkt):
         print "handle ARP"
         fields, ops = self.default_Field_Ops(pkt)
+        ### Uncomment to test Lab 10 solution #### 
+        #fields, ops = self.Arp_Spoof_Check(pkt)#Lab 10
         self.install_field_ops(pkt,fields,ops)        
 		
     def handle_ip(self,pkt):
         print "handle IP"
-        #fields, ops = self.TTL_Check(pkt)
+        #fields, ops = self.TTL_Check(pkt) #Lab 9
 	fields, ops = self.default_Field_Ops(pkt) 
         self.install_field_ops(pkt,fields,ops)
 
     def handle_icmp(self,pkt):
         print "Handle ICMP"
-        #fields, ops = self.TTL_Check(pkt)
+        #fields, ops = self.TTL_Check(pkt)  #Lab 9
         fields, ops = self.default_Field_Ops(pkt)
         self.install_field_ops(pkt, fields, ops)
 
     def handle_tcp(self,pkt):
         print "handle TCP"
-        #fields, ops = self.TTL_Check(pkt)
+        #fields, ops = self.TTL_Check(pkt) #Lab 9
         fields, ops = self.default_Field_Ops(pkt)
         self.install_field_ops(pkt, fields, ops)       
 
     def handle_udp(self,pkt):
-        #fields, ops = self.TTL_Check(pkt)
+        #fields, ops = self.TTL_Check(pkt) #Lab 9
         fields, ops = self.default_Field_Ops(pkt)
         self.install_field_ops(pkt, fields, ops)
 
@@ -135,6 +144,14 @@ class Ryuretic_coupler(coupler):
         #####  Lab 9 Solution Goes Here  ##########
 
         ########### End Lab Solution #########
+        return fields, ops
+
+    def Arp_Spoof_Check(self, pkt):
+        fields, ops = self.default_Field_Ops(pkt)
+        #####  Lab 10 Solution Goes Here  ##########
+        
+        
+        ###########  End Lab Solution  ###############
         return fields, ops
 
 

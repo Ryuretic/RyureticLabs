@@ -1,18 +1,18 @@
 #####################################################################
 # Ryuretic: A Modular Framework for RYU                             #
-# !/ryu/ryu/app/SecRevCntrl/Ryuretic.py                             #
+# !/ryu/ryu/app/Ryuretic/Ryuretic.py                                #
 # Authors:                                                          #
 #   Jacob Cox (jcox70@gatech.edu)                                   #
 #   Sean Donovan (sdonovan@gatech.edu)                              #
 # Ryuretic.py                                                       #
 # date 25 April 2016                                                #
 #####################################################################
-# Copyright (C) 1883 Thomas Edison - All Rights Reserved            #
+# Copyright (C) 2016 Jacob Cox - All Rights Reserved                #
 # You may use, distribute and modify this code under the            #
 # terms of the Ryuretic license, provided this work is cited        #
 # in the work for which it is used.                                 #
 # For latest updates, please visit:                                 #
-#                   https://github.gatech.edu/jcox70/SecRevFramework#
+#                   https://github.gatech.edu/jcox70/RyureticLabs   #
 #####################################################################
 """How To Run This Program
 1) Ensure you have Ryu installed.
@@ -21,8 +21,8 @@
     b) Ryuretic.py
     c) Pkt_Parse13.py
     d) switch_mod13.py
-2) In your controller terminal type: cd ryu
-3) Enter PYTHONPATH=. ./bin/ryu-manager ryu/app/Ryuretic_Intf.py
+3) In your controller terminal type: cd ryu
+4) Enter PYTHONPATH=. ./bin/ryu-manager ryu/app/Ryuretic_Intf.py
 """
 ######################################################################
 import logging

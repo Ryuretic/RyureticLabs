@@ -1,10 +1,19 @@
-########################################################
-# Author Jacob Cox
-# switch_mod.py
+#####################################################################
+# Ryuretic: A Modular Framework for RYU                             #
+# !/ryu/ryu/app/Ryuretic/switch_mod13.py                            #
+# author: Jacob Cox
+# switch_mod13.py
 # Date 1 February 2016
-######################################################3
+#####################################################################
+# Copyright (C) 2016 Jacob Cox - All Rights Reserved                #
+# You may use, distribute and modify this code under the            #
+# terms of the Ryuretic license, provided this work is cited        #
+# in the work for which it is used.                                 #
+# For latest updates, please visit:                                 #
+#                   https://github.gatech.edu/jcox70/RyureticLabs   #
+#####################################################################
 """
-An OpenFlow 1.0 L2 learning switch implementation.
+An OpenFlow 1.3 L2 learning switch implementation.
 """
 
 import logging

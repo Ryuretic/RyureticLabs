@@ -1,17 +1,26 @@
-###################################################
-## author: Jacob Cox
-# Pkt_Parse.py
+#####################################################################
+# Ryuretic: A Modular Framework for RYU                             #
+# !/ryu/ryu/app/Ryuretic/Pkt_Parse13.py                           #
+# author: Jacob Cox
+# Pkt_Parse13.py
 # date 7 February 2016
-###################################################
+#####################################################################
+# Copyright (C) 2016 Jacob Cox - All Rights Reserved                #
+# You may use, distribute and modify this code under the            #
+# terms of the Ryuretic license, provided this work is cited        #
+# in the work for which it is used.                                 #
+# For latest updates, please visit:                                 #
+#                   https://github.gatech.edu/jcox70/RyureticLabs   #
+#####################################################################
 """How To Run This Program
 1) Ensure you have Ryu installed.
-2) Save the following files to /home/ubuntu/ryu/ryu/app/
+2) Save the following files to /home/ubuntu/ryu/ryu/app/Ryuretic
     a) coupler.py
     b) NFGRD.py
-    c) Pkt_Parse.py
-    d) switch_mod.py
-2) In your controller terminal type: cd ryu
-3) Enter PYTHONPATH=. ./bin/ryu-manager ryu/app/coupler.py
+    c) Pkt_Parse13.py
+    d) switch_mod13.py
+3) In your controller terminal type: cd ryu
+4) Enter PYTHONPATH=. ./bin/ryu-manager ryu/app/Ryuretic/Ryuretic_Intf.py
 """
 ###################################################
 import logging
