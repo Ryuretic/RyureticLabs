@@ -45,4 +45,4 @@ and new port) are specified in ops.
 When fields and ops are returned to the coupler, it creates
 
 
-Labs are located [here](https://github.gatech.edu/jcox70/RyureticLabs/wiki/Lab-1:-Rogue-NAT-Detector).
+Labs are located [here](https://github.com/Ryuretic/RyureticLabs/wiki/Lab-1:-Rogue-NAT-Detector).
