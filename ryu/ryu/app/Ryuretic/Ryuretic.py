@@ -76,12 +76,18 @@ class coupler(app_manager.RyuApp):
             self.handle_udp(pkt)
         elif pkt['tcp'] != None:
             self.handle_tcp(pkt)
+        elif pkt['icmp6'] != None:
+            self.handle_icmp6(pkt)
         elif pkt['icmp'] != None:
             self.handle_icmp(pkt)
         elif pkt['ip']!= None:
             self.handle_ip(pkt)
+        elif pkt['ip6'] != None:
+            self.handle_ip6(pkt)
         elif pkt['arp']!=None:
             self.handle_arp(pkt)
+        elif pkt['dhcp']!=None:
+            self.handle_dhcp(pkt)
         elif pkt['eth'] != None:
             self.handle_eth(pkt)
         else:
@@ -94,6 +100,9 @@ class coupler(app_manager.RyuApp):
     def handle_eth(self,pkt):
         raise NotImplementedError("handle_eth must be overridden by child.")
 
+    def handle_dhcp(self,pkt):
+        raise NotImplementedError("handle_dhcp must be overridden by child.")
+
     def handle_arp(self,pkt):
         raise NotImplementedError("handle_arp must be overridden by child.")
 
@@ -101,16 +110,19 @@ class coupler(app_manager.RyuApp):
         raise NotImplementedError("handle_ip must be overridden by child.")
 
     def handle_icmp(self,pkt):
-        raise NotImplementedError("handle_ip must be overridden by child.")
+        raise NotImplementedError("handle_icmp must be overridden by child.")
+
+    def handle_icmp6(self,pkt):
+        raise NotImplementedError("handle_icmp6 must be overridden by child.")
 
     def handle_tcp(self,pkt):
-        raise NotImplementedError("handle_ip must be overridden by child.")
+        raise NotImplementedError("handle_tcp must be overridden by child.")
 
     def handle_udp(self,pkt):
-        raise NotImplementedError("handle_ip must be overridden by child.")
+        raise NotImplementedError("handle_udp must be overridden by child.")
 
     def handle_unk(self,pkt):
-        raise NotImplementedError("handle_ip must be overridden by child.")
+        raise NotImplementedError("handle_unk must be overridden by child.")
 
 
     ##################################################################
@@ -127,6 +139,8 @@ class coupler(app_manager.RyuApp):
         
         # install table-miss flow entry
         match = parser.OFPMatch()
+##        actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER,
+##                                          ofproto.OFPCML_MAX)]
         actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER,
                                           ofproto.OFPCML_NO_BUFFER)]
 	self.add_flow(datapath, 0, match, actions)
@@ -206,7 +220,7 @@ class coupler(app_manager.RyuApp):
         #print "line 210 here are match", match 
         #print "line 211 here are instructions", inst
         #fix switch mod to address 'idle_t'
-        print match
+        print "Match: ", match
         mod = parser.OFPFlowMod(datapath=dp,
                             priority=ops['priority'],
                             idle_timeout=ops['idle_t'],

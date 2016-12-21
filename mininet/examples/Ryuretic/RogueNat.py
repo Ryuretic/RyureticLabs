@@ -74,8 +74,8 @@ class RevocationTopo(Topo):
         print "*** Adding hosts (h1, h2, and h3) ***"
         print "*** Linking hosts to s1 ***"
         #add six hosts with IP assigned 
-        h1 = self.addHost('h1', mac='00:00:00:00:00:01',
-                          ip="10.0.0.1", **hostConfig)
+        h1 = self.addHost('h1', mac='01:01:01:01:01:01',
+                          ip="10.0.0.1", **hostConfig)#MAC doesn't match
         self.addLink(s1, h1, 1, 1, **LinkConfig)
         
         h2 = self.addHost('h2', mac='00:00:00:00:00:02',
